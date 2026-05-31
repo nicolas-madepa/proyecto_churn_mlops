@@ -1,0 +1,26 @@
+# Entornos virtuales
+.venv/
+venv/
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Configuración local
+.env
+.vscode/
+
+# Archivos generados por ejecución
+data/*.csv
+models/*.pkl
+
+# Caché de pruebas
+.pytest_cache/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Enunciado de la tarea (no se versiona)
+instrucciones.md
