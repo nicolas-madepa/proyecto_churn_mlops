@@ -9,9 +9,9 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 MODEL_FILE = BASE_DIR / "models" / "modelo_churn.pkl"
 
 app = FastAPI(
-    title="API de Predicción de Churn",
+    title="Servicio ML-Ops - Churn",
     version="0.1.0",
-    description="API básica para consumir un modelo de Machine Learning."
+    description="Servicio ML-Ops para predicción de churn (API con FastAPI)."
 )
 
 class Cliente(BaseModel):
@@ -33,7 +33,9 @@ def cargar_modelo():
 @app.get("/")
 def inicio():
     return {
-        "mensaje": "API de predicción de churn activa"
+        "mensaje": "Servicio ML-Ops activo",
+        "estado": "ok",
+        "autor": "Nicolás Oporto"
     }
 
 @app.get("/health")
