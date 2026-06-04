@@ -1,0 +1,26 @@
+# Entorno virtual (NO debe entrar a la imagen: es de Windows y rompería el contenedor Linux)
+.venv/
+venv/
+
+# Control de versiones
+.git/
+.gitignore
+
+# Cachés de Python y de pruebas
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Datos y modelos generados localmente
+data/*.csv
+models/*.pkl
+
+# Configuración local / editor
+.env
+.vscode/
+
+# Enunciados de la tarea
+instrucciones.md
+instrucciones_lab2.md
+instrucciones_informe_trazabilidad.md
