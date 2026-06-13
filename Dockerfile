@@ -19,5 +19,10 @@ COPY . .
 # Puerto en el que escucha la API dentro del contenedor
 EXPOSE 8000
 
+# Verificación de salud: Docker consulta /health periódicamente para marcar el
+# contenedor como healthy/unhealthy (variación técnica del Lab 4).
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
 # Comando para iniciar el servicio
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]

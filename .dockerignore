@@ -12,7 +12,8 @@ __pycache__/
 *.pyo
 .pytest_cache/
 
-# Datos y modelos generados localmente
+# Datos generados localmente
+# (el modelo .joblib SÍ se incluye en la imagen para que /predict funcione dentro del contenedor)
 data/*.csv
 models/*.pkl
 
@@ -20,7 +21,18 @@ models/*.pkl
 .env
 .vscode/
 
-# Enunciados de la tarea
+# Pruebas, notebooks y documentación (no se necesitan en tiempo de ejecución)
+tests/
+notebooks/
+docs/
+README.md
+INSTRUCCIONES_EJECUCION.md
+
+# Enunciados de la tarea, capturas y documentos de entrega
 instrucciones.md
 instrucciones_lab2.md
+instrucciones_lab3.md
+instrucciones_lab4.md
 instrucciones_informe_trazabilidad.md
+Screenshot*.png
+*.docx
