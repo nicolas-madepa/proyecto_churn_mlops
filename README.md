@@ -52,3 +52,62 @@ El flujo básico será:
 4. Guardar las métricas.
 5. Crear una API básica.
 6. Probar el funcionamiento inicial.
+
+## API del servicio (FastAPI)
+
+Levantar la API en local:
+
+```bash
+uvicorn api.main:app --reload
+```
+
+Documentación interactiva (Swagger): http://127.0.0.1:8000/docs
+
+### Endpoints
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/` | Mensaje de estado del servicio y autor. |
+| GET | `/health` | Estado del servicio y disponibilidad del modelo. |
+| GET | `/info` | Versión del modelo, autor, variables utilizadas y metadatos. |
+| POST | `/predict` | Predice churn; devuelve probabilidad, nivel de riesgo y una recomendación. |
+
+### Ejemplo de `POST /predict`
+
+Cuerpo de la solicitud:
+
+```json
+{
+  "edad": 28,
+  "antiguedad_meses": 8,
+  "saldo_promedio": 1200,
+  "reclamos": 3,
+  "usa_app": 0
+}
+```
+
+Respuesta:
+
+```json
+{
+  "churn_predicho": 1,
+  "probabilidad_churn": 0.92,
+  "nivel_riesgo": "alto",
+  "recomendacion": "Alta probabilidad de abandono; priorizar contacto y oferta de retención.",
+  "version_modelo": "v1",
+  "autor": "Nicolás Oporto"
+}
+```
+
+### Validaciones de entrada
+
+`/predict` valida los rangos de cada campo (por ejemplo `edad` entre 18 y 100, `usa_app` en {0, 1}). Las solicitudes con campos faltantes, tipos incorrectos o valores fuera de rango devuelven un error `422`.
+
+## Modelo y artefactos
+
+El entrenamiento (`src/entrenar_modelo.py`) genera en `models/`:
+
+- `modelo_churn_v1.joblib`: modelo serializado (versión v1).
+- `modelo_churn_v1_metadata.json`: metadatos (autor, algoritmo, fecha de entrenamiento, variables).
+
+y las métricas en `docs/metricas_modelo.md`.

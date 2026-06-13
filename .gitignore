@@ -14,6 +14,7 @@ __pycache__/
 # Archivos generados por ejecución
 data/*.csv
 models/*.pkl
+models/*.joblib
 
 # Caché de pruebas
 .pytest_cache/
@@ -25,4 +26,7 @@ Thumbs.db
 # Enunciado de la tarea (no se versiona)
 instrucciones.md
 instrucciones_lab2.md
+instrucciones_lab3.md
+instrucciones_lab4.md
 instrucciones_informe_trazabilidad.md
+Screenshot 2026-06-04 100930.png

@@ -4,13 +4,15 @@ import joblib
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 
+MODEL_VERSION = "v1"
+
 BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data"
 MODELS_DIR = BASE_DIR / "models"
 DOCS_DIR = BASE_DIR / "docs"
 
 TEST_DATA = DATA_DIR / "test.csv"
-MODEL_FILE = MODELS_DIR / "modelo_churn.pkl"
+MODEL_FILE = MODELS_DIR / f"modelo_churn_{MODEL_VERSION}.joblib"
 METRICS_FILE = DOCS_DIR / "metricas_modelo.md"
 
 def evaluar_modelo():
