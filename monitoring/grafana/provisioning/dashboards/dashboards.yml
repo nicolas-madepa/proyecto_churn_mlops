@@ -1,0 +1,12 @@
+# Provider que carga automáticamente los dashboards desde la carpeta provisionada.
+apiVersion: 1
+
+providers:
+  - name: "churn-mlops"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

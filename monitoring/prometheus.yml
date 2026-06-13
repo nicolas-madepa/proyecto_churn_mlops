@@ -1,0 +1,10 @@
+# Configuración de Prometheus: cada 5s consulta el endpoint /metrics de la API.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: "churn-api"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["churn-api:8000"]
