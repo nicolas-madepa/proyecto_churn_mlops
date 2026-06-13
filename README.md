@@ -70,6 +70,8 @@ Documentación interactiva (Swagger): http://127.0.0.1:8000/docs
 | GET | `/` | Mensaje de estado del servicio y autor. |
 | GET | `/health` | Estado del servicio y disponibilidad del modelo. |
 | GET | `/info` | Versión del modelo, autor, variables utilizadas y metadatos. |
+| GET | `/selftest` | Ejecuta pruebas automáticas (modelo, predicción, validación) y expone su estado. |
+| GET | `/metrics` | Métricas del servicio en formato Prometheus. |
 | POST | `/predict` | Predice churn; devuelve probabilidad, nivel de riesgo y una recomendación. |
 
 ### Ejemplo de `POST /predict`
@@ -111,3 +113,31 @@ El entrenamiento (`src/entrenar_modelo.py`) genera en `models/`:
 - `modelo_churn_v1_metadata.json`: metadatos (autor, algoritmo, fecha de entrenamiento, variables).
 
 y las métricas en `docs/metricas_modelo.md`.
+
+## Monitoreo y operación (Prometheus + Grafana)
+
+El servicio está instrumentado con **Prometheus** y se monitorea con **Grafana**, levantados junto a la API mediante `docker compose`.
+
+### Levantar todo el stack
+
+```bash
+docker compose up -d --build
+```
+
+| Servicio | URL | Descripción |
+|---|---|---|
+| API | http://localhost:8005 | API de churn (`/`, `/health`, `/info`, `/predict`, `/docs`) |
+| API · métricas | http://localhost:8005/metrics | Métricas en formato Prometheus |
+| API · self-tests | http://localhost:8005/selftest | Pruebas automáticas en caliente |
+| Prometheus | http://localhost:9091 | Recolección de métricas |
+| Grafana | http://localhost:3001 | Dashboards (usuario/clave: `admin`/`admin`) |
+
+El dashboard **"Churn API - Monitoreo ML-Ops"** se provisiona automáticamente y muestra: tasa de solicitudes, latencia p95 de `/predict`, errores 422, predicciones por nivel de riesgo, probabilidad promedio de churn, disponibilidad del modelo y estado de las pruebas automáticas.
+
+### Métricas personalizadas (dominio ML)
+
+- `churn_predicciones_total{nivel_riesgo}` — predicciones por nivel de riesgo.
+- `churn_probabilidad_churn` — distribución de la probabilidad de churn predicha.
+- `churn_errores_validacion_total` — solicitudes inválidas (HTTP 422).
+- `churn_modelo_disponible` — 1/0 según disponibilidad del modelo.
+- `churn_selftest_status{prueba}` — resultado de cada prueba automática.
