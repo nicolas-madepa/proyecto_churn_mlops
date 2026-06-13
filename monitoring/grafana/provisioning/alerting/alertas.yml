@@ -1,0 +1,141 @@
+# Reglas de alerta de Grafana provisionadas como código.
+# Cierran el ciclo del monitoreo: métrica -> dashboard -> ALERTA -> acción.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: Alertas Churn
+    folder: Churn
+    interval: 1m
+    rules:
+      # --- Alerta PRIORITARIA: el modelo no está disponible ---
+      - uid: churn_modelo_caido
+        title: Modelo de churn no disponible
+        condition: C
+        for: 30s
+        noDataState: Alerting
+        execErrState: Alerting
+        labels:
+          severity: critical
+        annotations:
+          summary: "churn_modelo_disponible < 1: el modelo no está cargado o la API no responde. Acción: revisar/reiniciar el contenedor."
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: churn_modelo_disponible
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              conditions:
+                - type: query
+                  evaluator:
+                    type: lt
+                    params: [1]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                    params: []
+
+      # --- Latencia p95 de /predict demasiado alta ---
+      - uid: churn_latencia_alta
+        title: Latencia p95 de /predict alta
+        condition: C
+        for: 1m
+        noDataState: OK
+        execErrState: OK
+        labels:
+          severity: warning
+        annotations:
+          summary: "La latencia p95 de /predict superó 0.5 s de forma sostenida. Acción: revisar recursos / escalar."
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{handler="/predict"}[5m])))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              conditions:
+                - type: query
+                  evaluator:
+                    type: gt
+                    params: [0.5]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                    params: []
+
+      # --- Pico de errores de validación 422 ---
+      - uid: churn_pico_422
+        title: Pico de errores de validacion 422
+        condition: C
+        for: 1m
+        noDataState: OK
+        execErrState: OK
+        labels:
+          severity: warning
+        annotations:
+          summary: "Aumento sostenido de errores 422 (>0.5/s). Acción: revisar la integración del cliente."
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: sum(rate(churn_errores_validacion_total[1m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              conditions:
+                - type: query
+                  evaluator:
+                    type: gt
+                    params: [0.5]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                    params: []
