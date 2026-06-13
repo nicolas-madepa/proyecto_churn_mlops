@@ -141,3 +141,14 @@ El dashboard **"Churn API - Monitoreo ML-Ops"** se provisiona automáticamente y
 - `churn_errores_validacion_total` — solicitudes inválidas (HTTP 422).
 - `churn_modelo_disponible` — 1/0 según disponibilidad del modelo.
 - `churn_selftest_status{prueba}` — resultado de cada prueba automática.
+
+### Generar tráfico para la demo / capturas
+
+Para ver el dashboard actualizándose en tiempo real (y verificar el servicio en vivo, sin enviar predicciones a mano):
+
+```bash
+python scripts/generar_trafico.py            # continuo (Ctrl+C para detener)
+python scripts/generar_trafico.py --n 50     # 50 solicitudes y termina
+```
+
+Envía predicciones válidas variadas e inválidas hacia el contenedor, y comprueba que respondan `200`/`422`.
