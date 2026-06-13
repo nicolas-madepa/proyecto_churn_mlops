@@ -35,3 +35,20 @@ services:
     depends_on:
       - prometheus
     restart: unless-stopped
+
+  # Airflow LOCAL y aislado: orquesta el reentrenamiento del modelo (DAG churn_retraining).
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    image: churn-airflow-oporto
+    container_name: airflow-oporto
+    command: standalone
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=false
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=false
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+    restart: unless-stopped
