@@ -36,3 +36,7 @@ instrucciones_lab4.md
 instrucciones_informe_trazabilidad.md
 Screenshot*.png
 *.docx
+
+# Orquestación y monitoreo (no se necesitan dentro de la imagen de la API)
+docker-compose.yml
+monitoring/

@@ -53,3 +53,18 @@ def test_predict_fuera_de_rango():
     response = client.post("/predict", json=cliente_invalido)
 
     assert response.status_code == 422
+
+def test_selftest():
+    response = client.get("/selftest")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "todas_ok" in body
+    assert "pruebas" in body
+
+def test_metrics():
+    # El endpoint /metrics expone las métricas en formato Prometheus
+    response = client.get("/metrics")
+
+    assert response.status_code == 200
+    assert "http_requests_total" in response.text

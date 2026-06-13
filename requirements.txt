@@ -5,3 +5,4 @@ fastapi
 uvicorn
 pytest
 httpx
+prometheus-fastapi-instrumentator
