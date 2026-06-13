@@ -1,5 +1,7 @@
 # Proyecto Churn MLOps
 
+![CI](https://github.com/nicolas-madepa/proyecto_churn_mlops/actions/workflows/ci.yml/badge.svg)
+
 Este proyecto corresponde a una práctica inicial del módulo de MLOps.
 
 El objetivo es construir una estructura básica de trabajo para un proyecto de Machine Learning que permita:
@@ -152,3 +154,25 @@ python scripts/generar_trafico.py --n 50     # 50 solicitudes y termina
 ```
 
 Envía predicciones válidas variadas e inválidas hacia el contenedor, y comprueba que respondan `200`/`422`.
+
+### Alertas (Grafana)
+
+Grafana incluye alertas provisionadas como código (`monitoring/grafana/provisioning/alerting/`):
+
+- **Modelo de churn no disponible** (crítica) — se dispara si `churn_modelo_disponible < 1` o la API no responde.
+- **Latencia p95 de /predict alta** — si supera 0.5 s de forma sostenida.
+- **Pico de errores 422** — ante un aumento sostenido de solicitudes inválidas.
+
+### Simular drift
+
+Para demostrar *data drift* en vivo (en el dashboard se observa cómo sube la probabilidad de churn):
+
+```bash
+python scripts/simular_drift.py
+```
+
+Envía un lote "normal" y luego uno con la distribución desplazada (clientes de alto riesgo), y reporta el cambio en la probabilidad promedio.
+
+## Integración continua (CI)
+
+Cada push y cada Pull Request ejecutan las pruebas automáticamente con GitHub Actions (`.github/workflows/ci.yml`), garantizando que la API siga funcionando antes de integrar cambios.
