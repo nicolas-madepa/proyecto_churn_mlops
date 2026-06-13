@@ -176,3 +176,14 @@ Envía un lote "normal" y luego uno con la distribución desplazada (clientes de
 ## Integración continua (CI)
 
 Cada push y cada Pull Request ejecutan las pruebas automáticamente con GitHub Actions (`.github/workflows/ci.yml`), garantizando que la API siga funcionando antes de integrar cambios.
+
+## Orquestación del reentrenamiento (Airflow)
+
+Un servicio **Airflow local** (aislado, dentro del mismo `docker compose`) orquesta el pipeline de reentrenamiento mediante el DAG **`churn_retraining`** (`dags/churn_retraining.py`): `preparar_datos → entrenar_modelo → evaluar_modelo`. Cierra el ciclo ML-Ops: cuando el monitoreo detecta drift, se ejecuta el DAG para reentrenar y dejar lista una nueva versión del modelo.
+
+```bash
+docker compose up -d --build airflow
+```
+
+- UI de Airflow: http://localhost:8082 (usuario `admin`; la clave se genera al iniciar y aparece en los logs: `docker compose logs airflow | grep "Password for user"`).
+- Disparar el DAG: desde la UI o con `docker exec airflow-oporto airflow dags trigger churn_retraining`.
