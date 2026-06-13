@@ -47,6 +47,9 @@ services:
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=false
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=false
+      # Demo local: acceso sin login (todos los usuarios son admin). Evita lidiar
+      # con la contraseña autogenerada. NO usar así en producción.
+      - AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS=true
     ports:
       - "8082:8080"
     volumes:
