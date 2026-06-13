@@ -176,3 +176,18 @@ Envía un lote "normal" y luego uno con la distribución desplazada (clientes de
 ## Integración continua (CI)
 
 Cada push y cada Pull Request ejecutan las pruebas automáticamente con GitHub Actions (`.github/workflows/ci.yml`), garantizando que la API siga funcionando antes de integrar cambios.
+
+## Orquestación con Airflow
+
+Un servicio **Airflow local** (aislado, dentro del mismo `docker compose`) orquesta tres DAGs (`dags/`):
+
+- **`churn_retraining`** — reentrenamiento: `preparar_datos → entrenar_modelo → evaluar_modelo`. Cierra el ciclo ML-Ops ante drift.
+- **`churn_generar_trafico`** — genera tráfico hacia la API para poblar el dashboard de monitoreo.
+- **`churn_simular_drift`** — simula data drift; el cambio se observa en vivo en Grafana.
+
+```bash
+docker compose up -d --build airflow
+```
+
+- UI de Airflow: http://localhost:8082 (usuario `admin`; la clave se genera al iniciar y aparece en los logs: `docker compose logs airflow | grep "Password for user"`).
+- Disparar un DAG: desde la UI o con `docker exec airflow-oporto airflow dags trigger <dag_id>`.

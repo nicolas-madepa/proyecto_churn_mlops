@@ -1,0 +1,14 @@
+# Imagen de Airflow para el proyecto, con las dependencias del modelo y el código
+# del pipeline incluidos (para reentrenar dentro del contenedor de Airflow).
+FROM apache/airflow:3.2.1
+
+# Carpeta de trabajo del proyecto, propiedad del usuario airflow (escribible).
+USER root
+RUN mkdir -p /opt/proyecto && chown -R airflow:root /opt/proyecto
+USER airflow
+
+# Dependencias necesarias para ejecutar los scripts de entrenamiento.
+RUN pip install --no-cache-dir pandas scikit-learn joblib
+
+# Código del pipeline (preparar/entrenar/evaluar).
+COPY --chown=airflow:root src /opt/proyecto/src
