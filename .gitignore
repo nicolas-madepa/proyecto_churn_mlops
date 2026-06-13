@@ -14,7 +14,7 @@ __pycache__/
 # Archivos generados por ejecución
 data/*.csv
 models/*.pkl
-models/*.joblib
+# Nota: models/*.joblib SÍ se versiona (modelo serializado, requerido en el proyecto final)
 
 # Caché de pruebas
 .pytest_cache/
