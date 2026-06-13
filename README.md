@@ -2,16 +2,18 @@
 
 ![CI](https://github.com/nicolas-madepa/proyecto_churn_mlops/actions/workflows/ci.yml/badge.svg)
 
-Este proyecto corresponde a una práctica inicial del módulo de MLOps.
+Proyecto integrador de **ML-Ops**: una API predictiva de abandono de clientes (churn) construida, contenerizada y **operada** con observabilidad, alertas, integración continua y orquestación.
 
-El objetivo es construir una estructura básica de trabajo para un proyecto de Machine Learning que permita:
+## Capacidades
 
-- Preparar datos.
-- Entrenar un modelo.
-- Evaluar métricas.
-- Guardar el modelo entrenado.
-- Exponer el modelo mediante una API.
-- Ejecutar pruebas básicas.
+- **Modelo** serializado y versionado (`modelo_churn_v1.joblib` + metadatos).
+- **API** (FastAPI) con validación de entradas: `/`, `/health`, `/info`, `/predict`, `/selftest`, `/metrics`, `/docs`.
+- **Docker**: imagen con `HEALTHCHECK` y `docker compose` que levanta todo el stack.
+- **Monitoreo** en tiempo real con **Prometheus + Grafana** (dashboard provisionado como código).
+- **Alertas** de Grafana provisionadas (modelo caído, latencia, errores 422).
+- **CI** con GitHub Actions (pytest en cada push/PR).
+- **Drift**: simulación demostrable observable en el dashboard.
+- **Orquestación** con **Airflow** (DAGs de reentrenamiento, generación de tráfico y simulación de drift).
 
 ## Problema del proyecto
 
@@ -23,26 +25,31 @@ El modelo intentará predecir si un cliente podría abandonar un servicio, utili
 
 ```text
 proyecto_churn_mlops
-├── data
-├── notebooks
-├── src
-├── models
-├── api
-├── tests
-├── docs
-├── README.md
-└── requirements.txt
+├── api/                  # API FastAPI (instrumentada con Prometheus)
+├── src/                  # preparar_datos / entrenar_modelo / evaluar_modelo
+├── models/               # modelo serializado .joblib + metadatos
+├── tests/                # pruebas automáticas (pytest)
+├── dags/                 # DAGs de Airflow (reentrenamiento, tráfico, drift)
+├── scripts/              # generar_trafico.py / simular_drift.py
+├── monitoring/           # Prometheus + provisioning de Grafana (datasource, dashboard, alertas)
+├── docs/                 # métricas del modelo
+├── data/ · notebooks/
+├── Dockerfile · Dockerfile.airflow · .dockerignore
+├── docker-compose.yml    # API + Prometheus + Grafana + Airflow
+├── .github/workflows/    # CI (GitHub Actions)
+└── requirements.txt · README.md
 ```
 
 ## Carpetas principales
 
-- `data`: contiene los datos del proyecto.
-- `notebooks`: contiene análisis exploratorios.
-- `src`: contiene los scripts principales del modelo.
-- `models`: contiene el modelo entrenado.
-- `api`: contiene la API del modelo.
-- `tests`: contiene pruebas automáticas.
-- `docs`: contiene documentación y métricas.
+- `api`: API del modelo (endpoints, validación y métricas Prometheus).
+- `src`: scripts del modelo (preparación, entrenamiento y evaluación).
+- `models`: modelo serializado y sus metadatos.
+- `tests`: pruebas automáticas.
+- `dags`: DAGs de Airflow que orquestan el pipeline.
+- `scripts`: utilidades para generar tráfico y simular drift.
+- `monitoring`: configuración de Prometheus y los dashboards/alertas de Grafana.
+- `docs`: documentación y métricas.
 
 ## Flujo inicial del proyecto
 
@@ -189,5 +196,5 @@ Un servicio **Airflow local** (aislado, dentro del mismo `docker compose`) orque
 docker compose up -d --build airflow
 ```
 
-- UI de Airflow: http://localhost:8082 (usuario `admin`; la clave se genera al iniciar y aparece en los logs: `docker compose logs airflow | grep "Password for user"`).
-- Disparar un DAG: desde la UI o con `docker exec airflow-oporto airflow dags trigger <dag_id>`.
+- UI de Airflow: http://localhost:8082 — **acceso sin login** (modo demo local: todos los usuarios son admin).
+- Disparar un DAG: desde la UI (botón ▶) o con `docker exec airflow-oporto airflow dags trigger <dag_id>`.
